@@ -64,7 +64,7 @@ class CharacterController extends Controller
 
         return response()->json($response);
     }
-    
+
 
     public function createCharacter(Request $request)
     {
@@ -100,11 +100,23 @@ class CharacterController extends Controller
                 return response()->json($response);
             }
 
-            // หา character_id ล่าสุด
-            $lastCharacterID = $characters->max('character_id');
+            // ดึง character_id ทั้งหมดที่ user มี
+            $existingIDs = $characters->pluck('character_id')->map(function ($id) {
+                return intval($id); // กรณี character_id เป็น string
+            })->toArray();
 
-            // กำหนด character_id ใหม่ = ลำดับล่าสุด + 1 (หรือเริ่มจาก 1 ถ้าไม่มีเลย)
-            $newCharacterID = $lastCharacterID ? intval($lastCharacterID) + 1 : 1;
+            // หาเลข 1-4 ที่ยังไม่มี แล้วเอาตัวที่เล็กสุด
+            $allPossibleIDs = [1, 2, 3, 4];
+            $availableIDs = array_diff($allPossibleIDs, $existingIDs);
+
+            if (empty($availableIDs)) {
+                $response->message = 'No available character ID';
+                $response->status = 409;
+                $response->data = (object)[];
+                return response()->json($response);
+            }
+
+            $newCharacterID = min($availableIDs);
 
             // สร้าง character ใหม่
             $character = Character::create([
@@ -120,7 +132,7 @@ class CharacterController extends Controller
             $response->status = 201;
             $response->data = (object)[
                 'characterID' => $character->character_id,
-                'character_name' => $validatedData['character_name'],
+                'characterName' => $character->character_name,
                 'class' => $character->class,
                 'level' => $character->level,
                 'exp' => $character->exp,
