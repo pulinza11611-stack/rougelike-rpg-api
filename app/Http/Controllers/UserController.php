@@ -5,14 +5,11 @@ use App\Models\Users;
 
 use Illuminate\Http\Request;
 
-class CustomerController extends Controller
+class UserController extends Controller
 {
     public function getCustomerByID(Request $request)
     {
         $response = (object) array();
-        $response->message = '';
-        $response->status = 0;
-        $response->data = (object)[];
 
         try {
             // Validate id จาก request body
@@ -29,7 +26,7 @@ class CustomerController extends Controller
                 $response->data = (object)[
                     'id' => $users->id,
                     'userID' => $users->user_id,
-                    'userName' => $users->username,
+                    'userName' => $users->user_name,
                     'email' => $users->email,
                 ];
             } else {
