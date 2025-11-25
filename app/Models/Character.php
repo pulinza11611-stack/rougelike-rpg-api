@@ -11,4 +11,6 @@ class Character extends Model
     protected $table = 'characters'; 
     protected $primaryKey = 'id'; 
     protected $guarded = [];
+
+    //public $timestamps = false; // ถ้าไม่ต้องการใช้ timestamps ให้ตั้งเป็น false
 }

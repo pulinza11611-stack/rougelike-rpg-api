@@ -32,10 +32,8 @@ class ItemController extends Controller
                     $response->data = $items->map(function ($item) {
                         return (object) [
                             'id' => $item->id,
-                            'itemName' => $item->item_name,
-                            'type' => $item->type,
-                            'rarity' => $item->rarity,
-                            'effect' => $item->effect,
+                            'userID' => $item->	user_id,
+                            'itemID' => $item-> item_id,
                             'createdAt' => $item->created_at,
                             'updatedAt' => $item->updated_at,
                         ];
