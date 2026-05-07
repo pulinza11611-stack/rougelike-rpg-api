@@ -9,7 +9,7 @@ RUN docker-php-ext-install pdo_mysql mbstring zip bcmath exif pcntl
 
 RUN pecl install redis && docker-php-ext-enable redis
 
-RUN a2enmod rewrite headers
+RUN a2dismod mpm_event || true && a2enmod mpm_prefork rewrite headers
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
