@@ -11,6 +11,18 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::get('/hello', function (Request $request) {
+    return response()->json([
+        'message' => 'Hello World',
+        'status'  => 200,
+        'data'    => [
+            'name'      => $request->query('name', 'Adventurer'),
+            'timestamp' => now()->toIso8601String(),
+            'app'       => config('app.name'),
+        ],
+    ]);
+});
+
 Route::prefix('customer')->group(function () {
     Route::post('/getByID', [UserController::class, 'getCustomerByID']);
 });

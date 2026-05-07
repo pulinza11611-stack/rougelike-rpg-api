@@ -1,0 +1,28 @@
+FROM php:8.2-apache
+
+RUN apt-get update && apt-get install -y \
+        git curl zip unzip \
+        libpng-dev libonig-dev libxml2-dev libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo_mysql mbstring zip bcmath exif pcntl
+
+RUN pecl install redis && docker-php-ext-enable redis
+
+RUN a2enmod rewrite headers
+COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
+
+COPY . /var/www
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts \
+    && chown -R www-data:www-data /var/www \
+    && chmod -R 775 storage bootstrap/cache
+
+COPY docker/php/start-railway.sh /usr/local/bin/start-railway.sh
+RUN chmod +x /usr/local/bin/start-railway.sh
+
+CMD ["start-railway.sh"]
