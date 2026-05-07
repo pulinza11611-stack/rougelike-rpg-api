@@ -9,8 +9,9 @@ RUN docker-php-ext-install pdo_mysql mbstring zip bcmath exif pcntl
 
 RUN pecl install redis && docker-php-ext-enable redis
 
-RUN a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null || true \
-    && a2enmod mpm_prefork rewrite headers
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
+    && a2enmod mpm_prefork rewrite headers \
+    && ls -la /etc/apache2/mods-enabled/ | grep -E 'mpm|php'
 COPY docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
