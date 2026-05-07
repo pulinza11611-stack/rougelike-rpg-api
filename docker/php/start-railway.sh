@@ -11,6 +11,14 @@ if [ -z "${APP_KEY}" ]; then
     echo "[start-railway] WARNING: APP_KEY is empty. Generate one with 'php artisan key:generate --show' and set it in Railway Variables."
 fi
 
+# Sanitize APP_URL: if RAILWAY_PUBLIC_DOMAIN is empty, APP_URL becomes "https://" which Laravel rejects (Invalid URI).
+case "${APP_URL}" in
+    "https://"|"http://"|"")
+        export APP_URL="http://localhost"
+        echo "[start-railway] APP_URL was empty/invalid, falling back to ${APP_URL}"
+        ;;
+esac
+
 echo "[start-railway] running migrations..."
 php artisan migrate --force || echo "[start-railway] migrate failed (continuing)"
 
